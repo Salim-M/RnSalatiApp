@@ -1,7 +1,7 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 import { View, FlatList, StyleSheet } from "react-native";
-import { List, Divider } from "react-native-paper";
+import { List, withTheme, Divider, Searchbar } from "react-native-paper";
 
 import {
   useFonts,
@@ -9,14 +9,31 @@ import {
   Amiri_700Bold,
 } from "@expo-google-fonts/amiri";
 
-import Surahs from "../../data/surahs";
 import LoadingScreen from "../LoadingScreen";
 
-export default Home = ({ navigation }) => {
+const Home = ({ navigation, theme }) => {
+  const { colors } = theme;
+
+  const [surahs, setSurahs] = useState([]);
+  const [searchQuery, setSearchQuery] = React.useState("");
+
+  const onChangeSearch = (query) => {
+    const surahs = require("../../surahs.json");
+    setSurahs(
+      surahs.filter((item) =>
+        item.englishName.toLowerCase().includes(query.toLowerCase())
+      )
+    );
+    setSearchQuery(query);
+  };
+
   let [fontsLoaded] = useFonts({
     Amiri_400Regular,
     Amiri_700Bold,
   });
+  useEffect(() => {
+    setSurahs(require("../../surahs.json"));
+  }, []);
 
   if (!fontsLoaded) return <LoadingScreen />;
 
@@ -30,13 +47,23 @@ export default Home = ({ navigation }) => {
     />
   );
   return (
-    <View>
+    <View style={{ backgroundColor: colors.background, flex: 1 }}>
       <FlatList
-        data={Surahs}
+        data={surahs}
         keyExtractor={(item) => item.number.toString()}
         renderItem={renderItem}
         ItemSeparatorComponent={Divider}
         initialNumToRender={10}
+        ListHeaderComponent={
+          <>
+            <Searchbar
+              placeholder="Search"
+              onChangeText={onChangeSearch}
+              value={searchQuery}
+              style={{ margin: 10 }}
+            />
+          </>
+        }
       />
     </View>
   );
@@ -46,10 +73,12 @@ const styles = StyleSheet.create({
     textAlign: "right",
     fontFamily: "Amiri_700Bold",
     fontSize: 20,
-    marginVertical: -5,
+    marginVertical: -4,
   },
   description: {
     textAlign: "right",
     fontFamily: "Amiri_400Regular",
   },
 });
+
+export default withTheme(Home);

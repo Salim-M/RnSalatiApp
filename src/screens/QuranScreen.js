@@ -8,6 +8,7 @@ import AppNavigationBar from "../navigations/AppNavigationBar";
 // Screens
 import QuranScreenHome from "./QuranScreen/Home";
 import QuranScreenDetail from "./QuranScreen/Detail";
+import QuranScreenTafseer from "./QuranScreen/Tafseer";
 
 export default () => {
   const Stack = createStackNavigator();
@@ -26,6 +27,11 @@ export default () => {
           name="QuranScreenDetail"
           component={QuranScreenDetail}
           options={({ route }) => ({ title: route.params.englishName })}
+        />
+        <Stack.Screen
+          name="QuranScreenTafseer"
+          component={QuranScreenTafseer}
+          options={({ route }) => ({ title: "Tafseer" })}
         />
       </Stack.Navigator>
     </NavigationContainer>

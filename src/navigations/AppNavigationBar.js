@@ -9,6 +9,7 @@ export default function AppNavigationBar({ navigation, previous, scene }) {
       : options.title !== undefined
       ? options.title
       : scene.route.name;
+
   return (
     <Appbar.Header>
       {previous ? <Appbar.BackAction onPress={navigation.goBack} /> : null}

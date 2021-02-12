@@ -1,13 +1,15 @@
 import * as React from "react";
 import { AppRegistry } from "react-native";
-import { DefaultTheme, Provider as PaperProvider } from "react-native-paper";
+import { Provider as PaperProvider, DarkTheme } from "react-native-paper";
 import { name as appName } from "./app.json";
 import App from "./src/App";
 
 const theme = {
-  ...DefaultTheme,
+  ...DarkTheme,
   colors: {
-    primary: "#1b5e20",
+    ...DarkTheme.colors,
+    primary: "#fff",
+    accent: "#212121",
   },
 };
 

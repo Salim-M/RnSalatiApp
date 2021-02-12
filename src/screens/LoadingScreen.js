@@ -1,14 +1,15 @@
 import React from "react";
 import { View, StyleSheet } from "react-native";
-import { ActivityIndicator } from "react-native-paper";
+import { ActivityIndicator, withTheme } from "react-native-paper";
 
-export default function LoadingScreen() {
+const LoadingScreen = ({ theme }) => {
+  const { colors } = theme;
   return (
-    <View style={styles.view}>
+    <View style={[styles.view, { backgroundColor: colors.background }]}>
       <ActivityIndicator animating={true} />
     </View>
   );
-}
+};
 const styles = StyleSheet.create({
   view: {
     flex: 1,
@@ -16,3 +17,5 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
 });
+
+export default withTheme(LoadingScreen);
