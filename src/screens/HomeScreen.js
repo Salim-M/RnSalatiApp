@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { StyleSheet, View, ImageBackground } from "react-native";
+import React, { useEffect, useState, useRef } from "react";
+import { StyleSheet, View, ImageBackground, AppState } from "react-native";
 
 import {
   Surface,
@@ -8,47 +8,50 @@ import {
   Subheading,
   Caption,
   List,
+  withTheme,
+  Dialog,
+  Portal,
+  Paragraph,
 } from "react-native-paper";
+
 import { format } from "date-fns";
-import { arSA } from "date-fns/locale";
+import arSA from "date-fns/locale/ar-SA/index";
 
 import * as SQLite from "expo-sqlite";
 import TimesApi from "../apis/TimesApi";
-import * as Notifications from "expo-notifications";
-import * as Permissions from "expo-permissions";
+// import * as Notifications from "expo-notifications";
+// import * as Permissions from "expo-permissions";
 const db = SQLite.openDatabase("appstorage.db");
-import * as BackgroundFetch from "expo-background-fetch";
-import * as TaskManager from "expo-task-manager";
-export default function HomeScreen() {
+// import * as BackgroundFetch from "expo-background-fetch";
+// import * as TaskManager from "expo-task-manager";
+import { useFocusEffect } from "@react-navigation/native";
+
+const Home = ({ navigation, theme }) => {
   const [prayers, setPrayers] = useState(null);
   const [next, setNext] = useState(null);
   const [date, setDate] = useState("");
 
-  const schedulePushNotification = async (salat, time) => {
-    await Notifications.scheduleNotificationAsync({
-      content: {
-        title: salat + " at " + tConvert(time),
-        body: "🕒 View prayer times in Lebanon",
-      },
-      trigger: { seconds: time },
-    });
+  // Dialog
+  const [visible, setVisible] = React.useState(false);
+
+  //
+  const { colors } = theme;
+
+  const appState = useRef(AppState.currentState);
+
+  const _handleAppStateChange = (nextAppState) => {
+    if (
+      appState.current.match(/inactive|background/) &&
+      nextAppState === "active"
+    ) {
+      getPrayer();
+    }
+
+    appState.current = nextAppState;
   };
 
-  // TaskManager.defineTask("UPDATE_PRAYER_NOTIFICATIONS", async () => {
-  //   // const response = await Notifications.getAllScheduledNotificationsAsync();
-  //   // if (response.length === 0 && prayers != null) {
-  //   //   // //Schedule
-  //   //   schedulePushNotification("fajir", 3);
-  //   //   schedulePushNotification("zohor", 6);
-
-  //   //   // schedulePushNotification("zohor", 9);
-  //   //   // console.log("done");
-  //   // }
-  //   console.log("backkkk");
-  //   return BackgroundFetch.Result.NoData;
-  // });
-
   const updatePrayers = async () => {
+    setVisible(true);
     const response = await TimesApi.get("/timetable");
 
     db.transaction((tx) => {
@@ -68,8 +71,10 @@ export default function HomeScreen() {
         );
       });
     });
+    setVisible(false);
     getPrayer();
   };
+
   //Ref: https://stackoverflow.com/questions/13898423/javascript-convert-24-hour-time-of-day-string-to-12-hour-time-with-am-pm-and-no
   const tConvert = (time) => {
     time = time.toString().match(/^([01]\d|2[0-3])(:)([0-5]\d)/) || [time];
@@ -106,8 +111,6 @@ export default function HomeScreen() {
                 name: "Fajr",
                 time: result.rows._array[0].fajir,
               });
-            // schedulePrayers();
-            // const d = new Date();
             const compareTo = [
               { name: "Fajr", time: result.rows._array[0].fajir },
               {
@@ -151,19 +154,14 @@ export default function HomeScreen() {
     });
   };
   useEffect(() => {
-    Notifications.setNotificationHandler({
-      handleNotification: async () => ({
-        shouldShowAlert: true,
-        shouldPlaySound: false,
-        shouldSetBadge: false,
-      }),
-    });
-    // (async () => {
-    //   await BackgroundFetch.registerTaskAsync("UPDATE_PRAYER_NOTIFICATIONS", {
-    //     startOnBoot: true,
-    //     stopOnTerminate: false,
-    //   });
-    // })();
+    // Notifications.setNotificationHandler({
+    //   handleNotification: async () => ({
+    //     shouldShowAlert: true,
+    //     shouldPlaySound: false,
+    //     shouldSetBadge: false,
+    //   }),
+    // });
+
     db.transaction((tx) => {
       tx.executeSql(
         `create table if not exists prayers (id integer primary key not null, miladiDate text, fajir text, shourouk text, zohor text, asr text, maghrib text, ishaa text);`,
@@ -171,54 +169,29 @@ export default function HomeScreen() {
         () => getPrayer(false)
       );
     });
+    AppState.addEventListener("change", _handleAppStateChange);
 
-    // (() => {
-    //   // const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
-    //   // await Notifications.presentNotificationAsync({
-    //   //   title: 'Look at that notification',
-    //   //   body: "I'm so proud of myself!",
-    //   // });
-
-    //   // Second, call the method
-
-    //   // Notifications.scheduleNotificationAsync({
-    //   //   content: {
-    //   //     title: "Look at that notification",
-    //   //     body: "🕒 Prayer times in Lebanon.",
-    //   //   },
-    //   //   trigger: { seconds: 5 },
-    //   // });
-    // })();
+    return () => {
+      AppState.removeEventListener("change", _handleAppStateChange);
+    };
   }, []);
-  // const schedulePrayers = async () => {
-  //   const response = await Notifications.getAllScheduledNotificationsAsync();
-  //   if (response.length === 0 && prayers != null) {
-  //     // //Schedule
-  //     // schedulePushNotification("fajir", 3);
-  //     // schedulePushNotification("zohor", 6);
-  //     // schedulePushNotification("zohor", 9);
-  //     // console.log("done");
-  //   }
-  // };
 
   return (
-    <>
+    <View style={{ backgroundColor: colors.background, flex: 1 }}>
+      <Portal>
+        <Dialog visible={visible} dismissable={false}>
+          <Dialog.Title>Notice</Dialog.Title>
+          <Dialog.Content>
+            <Paragraph>Initializing ...</Paragraph>
+          </Dialog.Content>
+        </Dialog>
+      </Portal>
       <ImageBackground
         source={require("../../assets/img/home_Image.jpg")}
         style={{ height: 400 }}
         imageStyle={styles.topImage}
       >
-        <View
-          style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
+        <View style={[styles.onTopContainer]}>
           <View style={styles.roundedContainer}>
             <Caption>Next</Caption>
             <Title>{next ? next.name : "—"}</Title>
@@ -227,7 +200,7 @@ export default function HomeScreen() {
           <Text>{date}</Text>
         </View>
       </ImageBackground>
-      <View style={{ padding: 15, flex: 1 }}>
+      <View style={[styles.prayersContainer]}>
         <Surface style={{ elevation: 1, borderRadius: 10 }}>
           <List.Item
             title="Fajr"
@@ -258,9 +231,9 @@ export default function HomeScreen() {
           />
         </Surface>
       </View>
-    </>
+    </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   topImage: {
@@ -277,4 +250,18 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
+  prayersContainer: {
+    padding: 15,
+  },
+  onTopContainer: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    justifyContent: "center",
+    alignItems: "center",
+  },
 });
+
+export default withTheme(Home);
