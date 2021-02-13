@@ -16,7 +16,7 @@
     "@turf/helpers": "^6.3.0",
     "axios": "^0.21.1",
     "date-fns": "^2.17.0",
-    "expo": "~40.0.0",
+    "expo": "^40.0.0",
     "expo-av": "~8.7.0",
     "expo-background-fetch": "~8.6.0",
     "expo-font": "~8.4.0",
