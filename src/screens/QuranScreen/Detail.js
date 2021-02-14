@@ -32,7 +32,7 @@ const Detail = ({ route, theme, navigation }) => {
           `INSERT INTO surahs (surahNumber, surahContent, reachedAyah) VALUES (?, ?, ?);`,
           [number, JSON.stringify(response.data.data.ayahs), -1],
           () => {
-            // setState after being saved in cache db
+            // setState after being saved in the db
             setAyahs(response.data.data.ayahs);
             setLoading(false);
           }

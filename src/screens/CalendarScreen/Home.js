@@ -1,11 +1,6 @@
 import React, { useState, useEffect, useLayoutEffect } from "react";
 import { View } from "react-native";
-import {
-  withTheme,
-  List,
-  Divider,
-  ActivityIndicator,
-} from "react-native-paper";
+import { withTheme, List, Divider } from "react-native-paper";
 import { Calendar } from "react-native-calendars";
 import AladhanApi from "../../apis/AladhanApi";
 
@@ -60,18 +55,6 @@ const CalendarScreen = ({ navigation, theme }) => {
     const y = d.getFullYear();
     fetchMarkedDatesForMonth(m, y);
   }, []);
-
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerRight: () => (
-        <ActivityIndicator
-          animating={loading}
-          size={16}
-          style={{ marginRight: 10 }}
-        />
-      ),
-    });
-  }, [loading]);
 
   const selectDate = (date) => {
     for (var key in markedDates) {

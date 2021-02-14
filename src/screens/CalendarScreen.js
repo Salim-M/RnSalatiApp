@@ -4,7 +4,6 @@ import { createStackNavigator } from "@react-navigation/stack";
 
 import AppNavigationBar from "../navigations/AppNavigationBar";
 
-// Screens
 import CalendarScreenHome from "./CalendarScreen/Home";
 
 export default () => {

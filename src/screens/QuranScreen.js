@@ -2,10 +2,8 @@ import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 
-//
 import AppNavigationBar from "../navigations/AppNavigationBar";
 
-// Screens
 import QuranScreenHome from "./QuranScreen/Home";
 import QuranScreenDetail from "./QuranScreen/Detail";
 import QuranScreenTafseer from "./QuranScreen/Tafseer";
