@@ -1,5 +1,11 @@
 import React, { useEffect, useState, useRef } from "react";
-import { StyleSheet, View, ImageBackground, AppState } from "react-native";
+import {
+  StyleSheet,
+  View,
+  ImageBackground,
+  AppState,
+  ScrollView,
+} from "react-native";
 
 import {
   Surface,
@@ -14,28 +20,25 @@ import {
   Paragraph,
 } from "react-native-paper";
 
-import { format } from "date-fns";
+import { format, differenceInSeconds } from "date-fns";
 import arSA from "date-fns/locale/ar-SA/index";
 
 import * as SQLite from "expo-sqlite";
 import TimesApi from "../apis/TimesApi";
-// import * as Notifications from "expo-notifications";
-// import * as Permissions from "expo-permissions";
+import * as Notifications from "expo-notifications";
 const db = SQLite.openDatabase("appstorage.db");
-// import * as BackgroundFetch from "expo-background-fetch";
-// import * as TaskManager from "expo-task-manager";
-import { useFocusEffect } from "@react-navigation/native";
+import * as BackgroundFetch from "expo-background-fetch";
+import * as TaskManager from "expo-task-manager";
 
-const Home = ({ navigation, theme }) => {
+const Home = ({ theme }) => {
+  const { colors } = theme;
+
   const [prayers, setPrayers] = useState(null);
   const [next, setNext] = useState(null);
-  const [date, setDate] = useState("");
-
-  // Dialog
+  const [date, setDate] = useState(null);
   const [visible, setVisible] = React.useState(false);
 
-  //
-  const { colors } = theme;
+  const TASK_NAME = "SET_PRAYER_NOTIFICATIONS";
 
   const appState = useRef(AppState.currentState);
 
@@ -88,6 +91,7 @@ const Home = ({ navigation, theme }) => {
   };
 
   const getPrayer = (nextDay = false) => {
+    // TODO: Split the code into reusable code
     const date = new Date();
     if (nextDay) {
       date.setDate(date.getDate() + 1);
@@ -142,6 +146,23 @@ const Home = ({ navigation, theme }) => {
             }
             if (upcoming != null) {
               setNext(upcoming);
+              const target = new Date();
+              target.setHours(upcoming.time.split(":")[0]);
+              target.setMinutes(upcoming.time.split(":")[1]);
+              const result = differenceInSeconds(target, new Date());
+              (async () => {
+                const response = await Notifications.getAllScheduledNotificationsAsync();
+                if (response.length === 0)
+                  await Notifications.scheduleNotificationAsync({
+                    content: {
+                      title: `${upcoming.name} at ${tConvert(upcoming.time)}`,
+                      body: "🕒 View prayer times in Lebanon",
+                    },
+                    trigger: {
+                      seconds: result,
+                    },
+                  });
+              })();
             } else {
               // move to the next day prayers
               getPrayer(true);
@@ -153,14 +174,13 @@ const Home = ({ navigation, theme }) => {
       );
     });
   };
+
   useEffect(() => {
-    // Notifications.setNotificationHandler({
-    //   handleNotification: async () => ({
-    //     shouldShowAlert: true,
-    //     shouldPlaySound: false,
-    //     shouldSetBadge: false,
-    //   }),
-    // });
+    TaskManager.defineTask(TASK_NAME, () => getPrayer(false));
+    BackgroundFetch.registerTaskAsync(TASK_NAME, {
+      stopOnTerminate: false,
+      startOnBoot: true,
+    });
 
     db.transaction((tx) => {
       tx.executeSql(
@@ -177,7 +197,10 @@ const Home = ({ navigation, theme }) => {
   }, []);
 
   return (
-    <View style={{ backgroundColor: colors.background, flex: 1 }}>
+    <ScrollView
+      style={{ backgroundColor: colors.background, flex: 1 }}
+      showsVerticalScrollIndicator={false}
+    >
       <Portal>
         <Dialog visible={visible} dismissable={false}>
           <Dialog.Title>Notice</Dialog.Title>
@@ -187,8 +210,8 @@ const Home = ({ navigation, theme }) => {
         </Dialog>
       </Portal>
       <ImageBackground
-        source={require("../../assets/img/home_Image.jpg")}
-        style={{ height: 400 }}
+        source={require("../../assets/home_Image.jpg")}
+        style={{ height: 360 }}
         imageStyle={styles.topImage}
       >
         <View style={[styles.onTopContainer]}>
@@ -231,7 +254,7 @@ const Home = ({ navigation, theme }) => {
           />
         </Surface>
       </View>
-    </View>
+    </ScrollView>
   );
 };
 
@@ -239,12 +262,12 @@ const styles = StyleSheet.create({
   topImage: {
     borderBottomRightRadius: 50,
     borderBottomLeftRadius: 50,
-    height: 380,
+    height: 360,
   },
   roundedContainer: {
-    width: 140,
-    height: 140,
-    borderRadius: 70,
+    width: 136,
+    height: 136,
+    borderRadius: 68,
     marginBottom: 15,
     backgroundColor: "rgba(255,255,255, 0.06)",
     alignItems: "center",

@@ -10,6 +10,9 @@
       "resizeMode": "contain",
       "backgroundColor": "#121212"
     },
+    "notification": {
+      "icon": "./assets/ic_stat_.png"
+    },
     "updates": {
       "fallbackToCacheTimeout": 0
     },
@@ -23,6 +26,18 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "hooks": {
+      "postPublish": [
+        {
+          "file": "sentry-expo/upload-sourcemaps",
+          "config": {
+            "organization": "dev-bq",
+            "project": "salati-app-local",
+            "authToken": "c7cf0cadfc3348d2bf80175a79b0888325f7cca56fad463cae29a98c1fa920b8"
+          }
+        }
+      ]
     }
   }
 }

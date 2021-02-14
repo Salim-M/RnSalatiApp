@@ -19,6 +19,7 @@ const Home = ({ theme }) => {
   const [subscription, setSubscription] = useState(null);
   const [rotateValueHolder] = useState(new Animated.Value(0));
   const [bearing, setBearing] = useState(0);
+  const [error, setError] = useState(null);
 
   const rotateData = rotateValueHolder.interpolate({
     inputRange: [0, 360],
@@ -29,15 +30,7 @@ const Home = ({ theme }) => {
     (async () => {
       let { status } = await Location.requestPermissionsAsync();
       if (status !== "granted") {
-        //handle error
-        return (
-          <View>
-            <Text>
-              Please enable location access from your device settings, and try
-              again.
-            </Text>
-          </View>
-        );
+        return setError(true);
       }
 
       let location = await Location.getCurrentPositionAsync();
@@ -101,8 +94,25 @@ const Home = ({ theme }) => {
     return Math.round(angle);
   };
 
-  if (loading) return <LoadingScreen />;
-
+  if (loading && !error) return <LoadingScreen />;
+  if (error) {
+    return (
+      <View
+        style={{
+          backgroundColor: colors.background,
+          flex: 1,
+          justifyContent: "center",
+          alignItems: "center",
+          padding: 20,
+        }}
+      >
+        <Text>
+          Please enable location access from your device settings, and try
+          again.
+        </Text>
+      </View>
+    );
+  }
   return (
     <View
       style={[
