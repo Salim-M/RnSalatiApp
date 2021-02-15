@@ -175,13 +175,13 @@ const Home = ({ theme }) => {
     });
   };
 
-  useEffect(() => {
-    TaskManager.defineTask(TASK_NAME, () => getPrayer(false));
-    BackgroundFetch.registerTaskAsync(TASK_NAME, {
-      stopOnTerminate: false,
-      startOnBoot: true,
-    });
+  TaskManager.defineTask(TASK_NAME, () => getPrayer(false));
+  BackgroundFetch.registerTaskAsync(TASK_NAME, {
+    stopOnTerminate: false,
+    startOnBoot: true,
+  });
 
+  useEffect(() => {
     db.transaction((tx) => {
       tx.executeSql(
         `create table if not exists prayers (id integer primary key not null, miladiDate text, fajir text, shourouk text, zohor text, asr text, maghrib text, ishaa text);`,
