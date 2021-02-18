@@ -1,5 +1,5 @@
 import axios from "axios";
 export default axios.create({
-  baseURL: "http://192.168.1.33:8000/api/v1",
+  baseURL: "https://blooming-shore-87046.herokuapp.com/api/v1",
   timeout: 10000,
 });
