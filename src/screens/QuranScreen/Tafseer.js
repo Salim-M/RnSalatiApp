@@ -6,7 +6,7 @@ import { Audio } from "expo-av";
 
 import LoadingScreen from "../LoadingScreen";
 
-import TafseerApi from "../../apis/TafseerApi";
+import SalatiApi from "../../apis/SalatiApi";
 
 import {
   useFonts,
@@ -64,7 +64,7 @@ const Tafseer = ({ route, theme }) => {
 
   const fetchTafseer = async (surah, ayah) => {
     try {
-      const response = await TafseerApi.get("/tafseer", {
+      const response = await SalatiApi.get("/tafseer", {
         params: {
           surah,
           ayah,
