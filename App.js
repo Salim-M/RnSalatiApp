@@ -10,6 +10,7 @@ const theme = {
     ...DarkTheme.colors,
     primary: "#fff",
     accent: "#212121",
+    notification: "#4caf50",
   },
 };
 
@@ -22,3 +23,6 @@ export default function Main() {
 }
 
 AppRegistry.registerComponent(appName, () => Main);
+AppRegistry.registerHeadlessTask("SomeTaskName", () =>
+  require("./src/tasks/pushPrayers")
+);

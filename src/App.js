@@ -12,9 +12,5 @@ Sentry.init({
 });
 
 export default function App() {
-  return (
-    <>
-      <AppBottomNavigation />
-    </>
-  );
+  return <AppBottomNavigation />;
 }
