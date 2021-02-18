@@ -27,7 +27,8 @@ import SalatiApi from "../apis/SalatiApi";
 
 import * as SQLite from "expo-sqlite";
 import * as Notifications from "expo-notifications";
-
+import * as BackgroundFetch from "expo-background-fetch";
+import * as TaskManager from "expo-task-manager";
 const db = SQLite.openDatabase("appstorage.db");
 
 const Home = ({ theme, jumpTo }) => {
@@ -38,7 +39,7 @@ const Home = ({ theme, jumpTo }) => {
   const [date, setDate] = useState(null);
   const [visible, setVisible] = React.useState(false);
 
-  // const TASK_NAME = "SET_PRAYER_NOTIFICATIONS";
+  const TASK_NAME = "SET_PRAYER_NOTIFICATIONS";
 
   const appState = useRef(AppState.currentState);
 
@@ -146,23 +147,23 @@ const Home = ({ theme, jumpTo }) => {
             }
             if (upcoming != null) {
               setNext(upcoming);
-              // const target = new Date();
-              // target.setHours(upcoming.time.split(":")[0]);
-              // target.setMinutes(upcoming.time.split(":")[1]);
-              // const result = differenceInSeconds(target, new Date());
-              // (async () => {
-              //   const response = await Notifications.getAllScheduledNotificationsAsync();
-              //   if (response.length === 0)
-              //     await Notifications.scheduleNotificationAsync({
-              //       content: {
-              //         title: `${upcoming.name} at ${tConvert(upcoming.time)}`,
-              //         body: "🕒 View prayer times in Lebanon",
-              //       },
-              //       trigger: {
-              //         seconds: result,
-              //       },
-              //     });
-              // })();
+              const target = new Date();
+              target.setHours(upcoming.time.split(":")[0]);
+              target.setMinutes(upcoming.time.split(":")[1]);
+              const result = differenceInSeconds(target, new Date());
+              (async () => {
+                const response = await Notifications.getAllScheduledNotificationsAsync();
+                if (response.length === 0)
+                  await Notifications.scheduleNotificationAsync({
+                    content: {
+                      title: `${upcoming.name} at ${tConvert(upcoming.time)}`,
+                      body: "🕒 View prayer times in Lebanon",
+                    },
+                    trigger: {
+                      seconds: result,
+                    },
+                  });
+              })();
             } else {
               // move to the next day prayers
               getPrayer(true);
@@ -175,11 +176,11 @@ const Home = ({ theme, jumpTo }) => {
     });
   };
 
-  // TaskManager.defineTask(TASK_NAME, () => getPrayer(false));
-  // BackgroundFetch.registerTaskAsync(TASK_NAME, {
-  //   stopOnTerminate: false,
-  //   startOnBoot: true,
-  // });
+  TaskManager.defineTask(TASK_NAME, () => getPrayer(false));
+  BackgroundFetch.registerTaskAsync(TASK_NAME, {
+    stopOnTerminate: false,
+    startOnBoot: true,
+  });
 
   React.useEffect(() => {
     Notifications.setNotificationHandler({
