@@ -20,7 +20,7 @@ import {
   Paragraph,
 } from "react-native-paper";
 
-import { format } from "date-fns";
+import { format, differenceInSeconds } from "date-fns";
 import arSA from "date-fns/locale/ar-SA/index";
 import TimesApi from "../apis/TimesApi";
 import SalatiApi from "../apis/SalatiApi";
@@ -194,7 +194,7 @@ const Home = ({ theme, jumpTo }) => {
       const expoToken = await Notifications.getExpoPushTokenAsync();
       await SalatiApi.post("/register-device", {
         token: expoToken.data,
-      });
+      }).catch((err) => console.log(err.response.data));
     })();
   }, []);
 

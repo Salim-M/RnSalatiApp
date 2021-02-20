@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, StyleSheet } from "react-native";
-import { withTheme, Headline, Divider } from "react-native-paper";
+import { withTheme } from "react-native-paper";
 
 import { WebView } from "react-native-webview";
 
@@ -25,30 +24,18 @@ const Detail = ({ theme, route }) => {
   if (loading) return <LoadingScreen />;
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <WebView
-        originWhitelist={["*"]}
-        style={{
-          backgroundColor: colors.background,
-          marginVertical: 20,
-        }}
-        source={{
-          html: `<html><head><meta name="viewport" content="width=device-width, initial-scale=1.0"><style>body{color: #fff; direction: rtl;}img{border-radius:2px}</style></head><body>${post.body}</body></html>`,
-        }}
-      />
-    </View>
+    <WebView
+      originWhitelist={["*"]}
+      showsVerticalScrollIndicator={false}
+      style={{
+        backgroundColor: colors.background,
+        flex: 1,
+      }}
+      source={{
+        html: `<html><head><meta name="viewport" content="width=device-width, initial-scale=1.0"><style>body{direction: rtl;color: #f8f8ff;}img { display: block; max-width: 100%; height: auto; }</style></head><body>${post.body}</body></html>`,
+      }}
+    />
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 10,
-  },
-  headline: {
-    textAlign: "right",
-    padding: 10,
-  },
-});
 
 export default withTheme(Detail);

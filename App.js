@@ -23,6 +23,3 @@ export default function Main() {
 }
 
 AppRegistry.registerComponent(appName, () => Main);
-AppRegistry.registerHeadlessTask("SomeTaskName", () =>
-  require("./src/tasks/pushPrayers")
-);

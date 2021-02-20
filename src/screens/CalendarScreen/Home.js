@@ -4,7 +4,7 @@ import { withTheme, List, Divider } from "react-native-paper";
 import { Calendar } from "react-native-calendars";
 import AladhanApi from "../../apis/AladhanApi";
 
-const CalendarScreen = ({ navigation, theme }) => {
+const CalendarScreen = ({ theme }) => {
   const { colors } = theme;
   const [markedDates, setMarkedDates] = useState({});
   const [loading, setLoading] = useState(true);
