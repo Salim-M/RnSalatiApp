@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "178350679055",
+    "project_id": "salatiapp",
+    "storage_bucket": "salatiapp.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:178350679055:android:566aa7a50d20fb1914af7a",
+        "android_client_info": {
+          "package_name": "com.salimmajz.Salati"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "178350679055-v3rd7jk626grbbmaf86osih2c303137l.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCD3SnRYSS6XH4wTTMMaAu15uRGLGYsQ4I"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "178350679055-v3rd7jk626grbbmaf86osih2c303137l.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

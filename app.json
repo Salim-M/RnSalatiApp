@@ -22,6 +22,7 @@
     },
     "android": {
       "package": "com.salimmajz.Salati",
+      "googleServicesFile": "./google-services.json",
       "useNextNotificationsApi": true
     },
     "web": {
